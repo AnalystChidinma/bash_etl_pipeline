@@ -1,0 +1,9 @@
+# Ignore environment and log files
+.env
+logs/
+*.log
+
+# Ignore temporary or OS files
+*.tmp
+*.bak
+.DS_Store
