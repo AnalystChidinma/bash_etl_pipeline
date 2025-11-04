@@ -1,3 +1,4 @@
+
 #!/bin/bash
 set -e  # stop script if any command fails
 
@@ -58,3 +59,36 @@ else
     echo "❌ Transformation failed or no rows found for 2023" | tee -a $LOG_DIR/pipeline.log
     exit 1
 fi
+
+
+# Load Stage
+
+echo "----- Starting Load Stage -----" | tee -a $LOG_DIR/pipeline.log
+echo "Loading data into Gold layer..." | tee -a $LOG_DIR/pipeline.log
+
+# Define variables
+DATE=$(date +%Y-%m-%d)
+GOLD_FILE="$GOLD_DIR/finance_2023.csv.gz"
+PARTITION_DIR="$GOLD_DIR/ingestion_date=$DATE"
+
+# Create partitioned folder
+mkdir -p "$PARTITION_DIR"
+
+# Compress the transformed file into Gold directory
+gzip -c "$TRANSFORMED_FILE" > "$GOLD_FILE"
+
+# Copy compressed file into partitioned directory
+cp "$GOLD_FILE" "$PARTITION_DIR/"
+
+# Generate MD5 checksum for verification
+CHECKSUM_FILE="$PARTITION_DIR/finance_2023.csv.md5"
+md5sum "$TRANSFORMED_FILE" | awk '{print $1}' > "$CHECKSUM_FILE"
+
+# Confirmation messages for all steps
+echo "✅ Gold layer file created: $GOLD_FILE" | tee -a $LOG_DIR/pipeline.log
+echo "✅ Partition folder created: $PARTITION_DIR" | tee -a $LOG_DIR/pipeline.log
+echo "✅ MD5 checksum generated at: $CHECKSUM_FILE" | tee -a $LOG_DIR/pipeline.log
+
+# Final confirmation
+echo "🎉 ETL pipeline completed successfully!" | tee -a $LOG_DIR/pipeline.log
+
