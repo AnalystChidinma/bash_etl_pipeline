@@ -22,37 +22,39 @@ else
     echo "❌ Download failed" | tee -a $LOG_DIR/pipeline.log
     exit 1
 fi
+
 # Transform Stage
 
-
+echo "----- Starting Transformation Stage -----" | tee -a $LOG_DIR/pipeline.log
 echo "Transforming data..." | tee -a $LOG_DIR/pipeline.log
 
-TRANSFORMED_FILE="$TRANSFORMED_DIR/cleaned_data.csv"
+TRANSFORMED_FILE="$TRANSFORMED_DIR/finance_2023.csv"
 
-# Example transformation using awk:
-# - Skip empty lines
-# - Remove duplicate header rows
-# - Rename columns (if necessary)
-# - Filter out rows where any key column is empty
+# Using AWK to:
+# - Rename columns
+# - Select specific columns
+# - Filter rows where year = 2023
 
 awk -F',' 'BEGIN {OFS=","}
 NR==1 {
-    # Capture header and rename columns if needed
+    # Rename specific headers
     for (i=1; i<=NF; i++) {
-        gsub(/ /, "_", $i);      # Replace spaces with underscores
-        gsub(/"/, "", $i);       # Remove quotes
+        if ($i == "VariableCode") $i="variable_code";
+        if ($i == "Value") $i="value";
+        if ($i == "Units") $i="units";
+        if ($i == "Year") $i="year";
     }
-    print $0;                    # Print header
-    next
+    print "year","value","units","variable_code";  # Select only these 4 columns
 }
-NF > 0 { print $0 }              # Skip completely empty lines
-' "$RAW_FILE" > "$TRANSFORMED_FILE"
+NR>1 && $1 == 2023 {
+    print $1,$2,$3,$4;
+}' "$RAW_FILE" > "$TRANSFORMED_FILE"
 
 # Validate transformation
 if [[ -s "$TRANSFORMED_FILE" ]]; then
     ROW_COUNT=$(wc -l < "$TRANSFORMED_FILE")
     echo "✅ Transformation complete. Rows processed: $ROW_COUNT" | tee -a $LOG_DIR/pipeline.log
 else
-    echo "❌ Transformation failed or produced empty file." | tee -a $LOG_DIR/pipeline.log
+    echo "❌ Transformation failed or no rows found for 2023" | tee -a $LOG_DIR/pipeline.log
     exit 1
 fi
