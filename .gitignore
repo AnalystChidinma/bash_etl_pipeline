@@ -1,9 +1,17 @@
 # Ignore environment and log files
 .env
 logs/
-*.log
+
 
 # Ignore temporary or OS files
 *.tmp
 *.bak
 .DS_Store
+*.swp
+*.log
+*.md5
+
+# Ignore data folders
+data/raw/
+data/tarnsformed/
+data/gold/
