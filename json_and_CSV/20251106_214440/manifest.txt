@@ -1,0 +1,6 @@
+Archive timestamp: 20251106_214440
+Source directory: ./data/transformed
+Destination directory: ./json_and_CSV/20251106_214440
+Moved files:
+cleaned_data.csv
+finance_2023.csv
