@@ -33,9 +33,9 @@ curl -s -o $RAW_FILE "$DEC_SOURCE_URL"
 # Validate download
 if [[ -f "$RAW_FILE" ]]; then
     FILE_SIZE=$(stat -c%s "$RAW_FILE")    CHECKSUM=$(md5sum "$RAW_FILE" | awk '{print $1}')
-    echo "✅ Download successful. File size: ${FILE_SIZE} bytes, MD5: ${CHECKSUM}" | tee -a $LOG_DIR/pipeline.log
+    echo "Download successful. File size: ${FILE_SIZE} bytes, MD5: ${CHECKSUM}" | tee -a $LOG_DIR/pipeline.log
 else
-    echo "❌ Download failed" | tee -a $LOG_DIR/pipeline.log
+    echo "Download failed" | tee -a $LOG_DIR/pipeline.log
     exit 1
 fi
 
@@ -69,9 +69,9 @@ NR>1 && $1 == 2023 {
 # Validate transformation
 if [[ -s "$TRANSFORMED_FILE" ]]; then
     ROW_COUNT=$(wc -l < "$TRANSFORMED_FILE")
-    echo "✅ Transformation complete. Rows processed: $ROW_COUNT" | tee -a $LOG_DIR/pipeline.log
+    echo "Transformation complete. Rows processed: $ROW_COUNT" | tee -a $LOG_DIR/pipeline.log
 else
-    echo "❌ Transformation failed or no rows found for 2023" | tee -a $LOG_DIR/pipeline.log
+    echo "Transformation failed or no rows found for 2023" | tee -a $LOG_DIR/pipeline.log
     exit 1
 fi
 
@@ -100,9 +100,9 @@ CHECKSUM_FILE="$PARTITION_DIR/finance_2023.csv.md5"
 md5sum "$TRANSFORMED_FILE" | awk '{print $1}' > "$CHECKSUM_FILE"
 
 # Confirmation messages for all steps
-echo "✅ Gold layer file created: $GOLD_FILE" | tee -a $LOG_DIR/pipeline.log
-echo "✅ Partition folder created: $PARTITION_DIR" | tee -a $LOG_DIR/pipeline.log
-echo "✅ MD5 checksum generated at: $CHECKSUM_FILE" | tee -a $LOG_DIR/pipeline.log
+echo "Gold layer file created: $GOLD_FILE" | tee -a $LOG_DIR/pipeline.log
+echo "Partition folder created: $PARTITION_DIR" | tee -a $LOG_DIR/pipeline.log
+echo "MD5 checksum generated at: $CHECKSUM_FILE" | tee -a $LOG_DIR/pipeline.log
 
 # Final confirmation
 echo "ETL pipeline completed successfully at $(date)!" | tee -a $LOG_DIR/pipeline.log

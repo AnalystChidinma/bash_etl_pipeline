@@ -6,16 +6,16 @@ echo "----- Loading CSVs into PostgreSQL Database: $PGDATABASE -----"
 
 # Ensure database exists
 psql -U $PGUSER -tc "SELECT 1 FROM pg_database WHERE datname='$PGDATABASE'" | grep -q 1 || psql -U $PGUSER -c "CREATE DATABASE $PGDATABASE"
-echo "✅ Database '$PGDATABASE' ready."
+echo "Database '$PGDATABASE' ready."
 
 # Loop through all CSV files
 for file in $DEC_CSV_DIR/*.csv; do
-  [ -e "$file" ] || { echo "⚠️  No CSV files found in $DEC_CSV_DIR"; exit 0; }
+  [ -e "$file" ] || { echo "No CSV files found in $DEC_CSV_DIR"; exit 0; }
 
   filename=$(basename -- "$file")
   table="${filename%.csv}"
 
-  echo "📥 Processing file: $filename (Table: $table)"
+  echo "Processing file: $filename (Table: $table)"
 
   # Drop table if exists (optional)
   psql -U $PGUSER -d $PGDATABASE -c "DROP TABLE IF EXISTS $table CASCADE;"
@@ -31,7 +31,7 @@ for file in $DEC_CSV_DIR/*.csv; do
   # Copy data into PostgreSQL
   psql -U $PGUSER -d $PGDATABASE -c "\COPY $table FROM '$file' CSV HEADER;"
 
-  echo "✅ Loaded $filename into $table"
+  echo "Loaded $filename into $table"
 done
 
-echo "🎉 All CSV files successfully loaded into '$PGDATABASE'"
+echo "All CSV files successfully loaded into '$PGDATABASE'"
